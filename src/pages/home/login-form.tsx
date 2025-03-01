@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import localStorageKeys from "@/config/local-storage-keys";
+import { usePortainerLogin } from "@/services/swr";
 import { FormEventHandler, useState } from "react";
 import SavedUrl from "./saved-url";
 
 type Props = {};
 
 const LoginForm = (props: Props) => {
+  const { trigger, isMutating } = usePortainerLogin();
   const [values, setValues] = useState({
     url: "",
     username: "",
@@ -18,6 +21,8 @@ const LoginForm = (props: Props) => {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    localStorage.setItem(localStorageKeys.CURRENT_URL, values.url);
+    trigger(values);
   };
 
   return (
@@ -40,7 +45,9 @@ const LoginForm = (props: Props) => {
         onChange={(e) => handleChange("password", e.target.value)}
       />
 
-      <Button type="submit">Sign In</Button>
+      <Button type="submit" disabled={isMutating}>
+        Sign In
+      </Button>
     </form>
   );
 };
